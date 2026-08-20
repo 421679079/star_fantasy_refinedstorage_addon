@@ -1,0 +1,23 @@
+{
+  "gui.star_fantasy_refinedstorage_addon.stonecutter": "Network Stonecutter",
+  "gui.star_fantasy_refinedstorage_addon.smithing": "Network Smithing Table",
+  "gui.star_fantasy_refinedstorage_addon.anvil": "Network Anvil",
+  "gui.star_fantasy_refinedstorage_addon.grindstone": "Network Grindstone",
+  "gui.star_fantasy_refinedstorage_addon.goety_dark_anvil": "Network Dark Anvil",
+  "gui.star_fantasy_refinedstorage_addon.transmogrification_table": "Network Transmogrification Table",
+  "gui.star_fantasy_refinedstorage_addon.quality_reforging_station": "Network Reforging Station",
+  "gui.star_fantasy_refinedstorage_addon.terra_workshop": "Network Workshop",
+  "gui.star_fantasy_refinedstorage_addon.disenchanter": "Network Disenchanter",
+  "gui.star_fantasy_refinedstorage_addon.irons_inscription_table": "Network Inscription Table",
+  "gui.star_fantasy_refinedstorage_addon.irons_arcane_anvil": "Network Arcane Anvil",
+  "gui.star_fantasy_refinedstorage_addon.irons_scroll_forge": "Network Scroll Forge",
+  "tooltip.star_fantasy_refinedstorage_addon.open": "Open %s",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.description": "Insert a workstation to use it directly from this screen",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.supported": "Currently supported workstations:",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.entry": "- %s",
+  "message.star_fantasy_refinedstorage_addon.unavailable": "This crafting grid has not configured that workstation",
+  "message.star_fantasy_refinedstorage_addon.invalid_station_item": "That item is not a supported workstation",
+  "message.star_fantasy_refinedstorage_addon.duplicate_station": "That workstation is already configured",
+  "message.star_fantasy_refinedstorage_addon.missing_materials": "Not enough materials in the RS network and player inventory",
+  "message.star_fantasy_refinedstorage_addon.invalid_recipe": "That recipe cannot be transferred to this workstation"
+}

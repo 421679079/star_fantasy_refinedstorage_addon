@@ -1,0 +1,23 @@
+{
+  "gui.star_fantasy_refinedstorage_addon.stonecutter": "网络切石机",
+  "gui.star_fantasy_refinedstorage_addon.smithing": "网络锻造台",
+  "gui.star_fantasy_refinedstorage_addon.anvil": "网络铁砧",
+  "gui.star_fantasy_refinedstorage_addon.grindstone": "网络砂轮",
+  "gui.star_fantasy_refinedstorage_addon.goety_dark_anvil": "网络黑暗铁砧",
+  "gui.star_fantasy_refinedstorage_addon.transmogrification_table": "网络幻化台",
+  "gui.star_fantasy_refinedstorage_addon.quality_reforging_station": "网络品质重铸台",
+  "gui.star_fantasy_refinedstorage_addon.terra_workshop": "网络工匠作坊",
+  "gui.star_fantasy_refinedstorage_addon.disenchanter": "网络祛魔台",
+  "gui.star_fantasy_refinedstorage_addon.irons_inscription_table": "网络法术抄写台",
+  "gui.star_fantasy_refinedstorage_addon.irons_arcane_anvil": "网络奥术铁砧",
+  "gui.star_fantasy_refinedstorage_addon.irons_scroll_forge": "网络卷轴撰写台",
+  "tooltip.star_fantasy_refinedstorage_addon.open": "打开%s",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.description": "放入一个工作台后可在该界面里直接使用它",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.supported": "当前支持的工作台有：",
+  "tooltip.star_fantasy_refinedstorage_addon.station_slot.entry": "- %s",
+  "message.star_fantasy_refinedstorage_addon.unavailable": "当前合成终端没有配置这个工作台",
+  "message.star_fantasy_refinedstorage_addon.invalid_station_item": "这个物品不是已兼容的工作台",
+  "message.star_fantasy_refinedstorage_addon.duplicate_station": "这个工作台已经配置过了",
+  "message.star_fantasy_refinedstorage_addon.missing_materials": "RS 网络和玩家背包中的材料不足",
+  "message.star_fantasy_refinedstorage_addon.invalid_recipe": "无法向这个工作站传输该配方"
+}
