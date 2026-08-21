@@ -9,6 +9,7 @@ import com.starfantasy.refinedstorageaddon.compat.irons.IronsSpellbooksStationCo
 import com.starfantasy.refinedstorageaddon.compat.quality.QualityEquipmentStationCompat;
 import com.starfantasy.refinedstorageaddon.compat.terracurio.TerraCurioStationCompat;
 import com.starfantasy.refinedstorageaddon.compat.transmog.TransmogStationCompat;
+import com.starfantasy.refinedstorageaddon.compat.tacz.TaczStationCompat;
 import com.starfantasy.refinedstorageaddon.network.AddonNetwork;
 import com.starfantasy.refinedstorageaddon.network.ClientboundStationMenuPacket;
 import com.starfantasy.refinedstorageaddon.station.menu.NetworkAnvilMenu;
@@ -77,31 +78,40 @@ public final class StationMenus {
         }
         NetworkMenuSession session = new NetworkMenuSession(network, player, kind, origin);
         AtomicReference<AbstractContainerMenu> openedMenu = new AtomicReference<>();
-        player.openMenu(new SimpleMenuProvider((containerId, inventory, ignored) -> {
-            AbstractContainerMenu menu = switch (kind) {
-                case STONECUTTER -> new NetworkStonecutterMenu(containerId, inventory, session);
-                case SMITHING -> new NetworkSmithingMenu(containerId, inventory, session);
-                case ANVIL -> new NetworkAnvilMenu(containerId, inventory, session);
-                case GRINDSTONE -> new NetworkGrindstoneMenu(containerId, inventory, session);
-                case GOETY_DARK_ANVIL -> GoetyStationCompat.createDarkAnvilMenu(
-                        containerId, inventory, session);
-                case TRANSMOGRIFICATION_TABLE -> TransmogStationCompat.createMenu(
-                        containerId, inventory, session);
-                case QUALITY_REFORGING_STATION -> QualityEquipmentStationCompat.createMenu(
-                        containerId, inventory, session);
-                case TERRA_WORKSHOP -> TerraCurioStationCompat.createMenu(
-                        containerId, inventory, session);
-                case DISENCHANTER -> new NetworkDisenchantMenu(containerId, inventory, session);
-                case IRONS_INSCRIPTION_TABLE -> IronsSpellbooksStationCompat.createInscriptionMenu(
-                        containerId, inventory, session);
-                case IRONS_ARCANE_ANVIL -> IronsSpellbooksStationCompat.createArcaneAnvilMenu(
-                        containerId, inventory, session);
-                case IRONS_SCROLL_FORGE -> IronsSpellbooksStationCompat.createScrollForgeMenu(
-                        containerId, inventory, session);
-            };
-            openedMenu.set(menu);
-            return menu;
-        }, Component.translatable(kind.translationKey())));
+        Component title = Component.translatable(kind.translationKey());
+        if (isTaczStation(kind)) {
+            TaczStationCompat.openMenu(player, session, kind, title);
+            openedMenu.set(player.containerMenu);
+        } else {
+            player.openMenu(new SimpleMenuProvider((containerId, inventory, ignored) -> {
+                AbstractContainerMenu menu = switch (kind) {
+                    case STONECUTTER -> new NetworkStonecutterMenu(containerId, inventory, session);
+                    case SMITHING -> new NetworkSmithingMenu(containerId, inventory, session);
+                    case ANVIL -> new NetworkAnvilMenu(containerId, inventory, session);
+                    case GRINDSTONE -> new NetworkGrindstoneMenu(containerId, inventory, session);
+                    case GOETY_DARK_ANVIL -> GoetyStationCompat.createDarkAnvilMenu(
+                            containerId, inventory, session);
+                    case TRANSMOGRIFICATION_TABLE -> TransmogStationCompat.createMenu(
+                            containerId, inventory, session);
+                    case QUALITY_REFORGING_STATION -> QualityEquipmentStationCompat.createMenu(
+                            containerId, inventory, session);
+                    case TERRA_WORKSHOP -> TerraCurioStationCompat.createMenu(
+                            containerId, inventory, session);
+                    case DISENCHANTER -> new NetworkDisenchantMenu(containerId, inventory, session);
+                    case IRONS_INSCRIPTION_TABLE -> IronsSpellbooksStationCompat.createInscriptionMenu(
+                            containerId, inventory, session);
+                    case IRONS_ARCANE_ANVIL -> IronsSpellbooksStationCompat.createArcaneAnvilMenu(
+                            containerId, inventory, session);
+                    case IRONS_SCROLL_FORGE -> IronsSpellbooksStationCompat.createScrollForgeMenu(
+                            containerId, inventory, session);
+                    case TACZ_GUN_SMITH_TABLE, TACZ_AMMO_WORKBENCH,
+                            TACZ_ATTACHMENT_WORKBENCH -> throw new IllegalStateException(
+                            "TACZ workstations require an extended menu open packet");
+                };
+                openedMenu.set(menu);
+                return menu;
+            }, title));
+        }
 
         AbstractContainerMenu menu = openedMenu.get();
         if (menu == null || player.containerMenu != menu) {
@@ -120,6 +130,12 @@ public final class StationMenus {
                 finishTransfer(menu, player, kind, plan);
             }
         }
+    }
+
+    private static boolean isTaczStation(StationKind kind) {
+        return kind == StationKind.TACZ_GUN_SMITH_TABLE
+                || kind == StationKind.TACZ_AMMO_WORKBENCH
+                || kind == StationKind.TACZ_ATTACHMENT_WORKBENCH;
     }
 
     @Nullable

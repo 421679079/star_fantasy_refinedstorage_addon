@@ -1,5 +1,6 @@
 package com.starfantasy.refinedstorageaddon.client;
 
+import com.starfantasy.refinedstorageaddon.network.ClientboundTaczNetworkConsumptionPacket.ConsumedStack;
 import com.starfantasy.refinedstorageaddon.station.StationKind;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,5 +16,9 @@ public final class ClientPacketHandler {
 
     public static void markNetworkMenu(int containerId, StationKind kind) {
         ClientStationState.markNetworkMenu(containerId, kind);
+    }
+
+    public static void consumeTaczNetworkMaterials(List<ConsumedStack> consumed) {
+        ClientStationState.consumeNetworkMaterials(consumed);
     }
 }

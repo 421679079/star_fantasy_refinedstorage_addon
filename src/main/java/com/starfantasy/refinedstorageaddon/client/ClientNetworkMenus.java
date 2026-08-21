@@ -8,6 +8,7 @@ import com.starfantasy.refinedstorageaddon.compat.irons.NetworkScrollForgeMenu;
 import com.starfantasy.refinedstorageaddon.compat.quality.client.QualityEquipmentClientNetworkMenus;
 import com.starfantasy.refinedstorageaddon.compat.terracurio.client.TerraCurioClientNetworkMenus;
 import com.starfantasy.refinedstorageaddon.compat.transmog.client.TransmogClientNetworkMenus;
+import com.starfantasy.refinedstorageaddon.compat.tacz.client.TaczClientNetworkMenus;
 import com.starfantasy.refinedstorageaddon.station.StationKind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -61,6 +62,9 @@ public final class ClientNetworkMenus {
                     oldMenu, containerId, inventory);
             case DISENCHANTER -> null;
             case IRONS_INSCRIPTION_TABLE, IRONS_ARCANE_ANVIL, IRONS_SCROLL_FORGE -> null;
+            case TACZ_GUN_SMITH_TABLE, TACZ_AMMO_WORKBENCH,
+                    TACZ_ATTACHMENT_WORKBENCH -> TaczClientNetworkMenus.createReplacement(
+                    oldMenu, containerId, inventory);
         };
         if (newMenu == null) {
             return;
@@ -90,6 +94,9 @@ public final class ClientNetworkMenus {
             }
             case IRONS_INSCRIPTION_TABLE, IRONS_ARCANE_ANVIL, IRONS_SCROLL_FORGE -> {
             }
+            case TACZ_GUN_SMITH_TABLE, TACZ_AMMO_WORKBENCH,
+                    TACZ_ATTACHMENT_WORKBENCH -> TaczClientNetworkMenus.openScreen(
+                    minecraft, newMenu, inventory, title);
         }
     }
 
@@ -110,7 +117,9 @@ public final class ClientNetworkMenus {
                 || (StationKind.IRONS_INSCRIPTION_TABLE.isInstalled()
                 && (menu instanceof NetworkInscriptionTableMenu
                 || menu instanceof NetworkArcaneAnvilMenu
-                || menu instanceof NetworkScrollForgeMenu));
+                || menu instanceof NetworkScrollForgeMenu))
+                || (StationKind.TACZ_GUN_SMITH_TABLE.isInstalled()
+                && TaczClientNetworkMenus.isReplacement(menu));
     }
 
     public static final class NetworkStonecutterClientMenu extends StonecutterMenu {

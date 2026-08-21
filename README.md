@@ -14,11 +14,13 @@ JEI 是可选依赖。安装 JEI 后，可以在 RS 合成终端界面把切石�
 
 安装 Iron's Spells 'n Spellbooks 3.16.3 或更高版本后会增加法术抄写台、奥术铁砧与卷轴撰写台。卷轴撰写台打开时会从 RS 网络和玩家背包尝试装满纸张，纸张耗尽后自动补货，关闭时将剩余输入退回 RS。
 
+安装 Timeless & Classics Guns: Zero 1.1.7 或更高版本后会增加枪械工作台、弹药工作台与配件工作台入口。TACZ 工作台会在自己的界面中合并统计 RS 网络和玩家背包材料；制作仍由 TACZ 原配方与工作台过滤规则校验，成功后从两处材料源中统一扣除。
+
 本项目是独立实现，不包含第三方模组的反编译代码。项目源码使用 MIT 许可证；Refined Storage 本身不包含在发布 JAR 中。
 
 ## 本地构建
 
-将合法取得的 `refinedstorage-1.12.4.jar` 放入 `libs/`。如需编译对应兼容，另将 Goety、Transmog、Quality Equipment、TerraCurio、Disenchanting 与 Iron's Spells 'n Spellbooks 的兼容版本 JAR 放入 `libs/`，然后从项目根目录运行：
+将合法取得的 `refinedstorage-1.12.4.jar` 放入 `libs/`。如需编译对应兼容，另将 Goety、Transmog、Quality Equipment、TerraCurio、Disenchanting、Iron's Spells 'n Spellbooks 与 TACZ 的兼容版本 JAR 放入 `libs/`，然后从项目根目录运行：
 
 ```powershell
 gradle build

@@ -5,6 +5,7 @@ import com.refinedmods.refinedstorage.screen.grid.stack.IGridStack;
 import com.refinedmods.refinedstorage.screen.grid.stack.ItemGridStack;
 import com.starfantasy.refinedstorageaddon.network.AddonNetwork;
 import com.starfantasy.refinedstorageaddon.network.ServerboundStationSlotsRequestPacket;
+import com.starfantasy.refinedstorageaddon.network.ClientboundTaczNetworkConsumptionPacket.ConsumedStack;
 import com.starfantasy.refinedstorageaddon.station.StationKind;
 import com.starfantasy.refinedstorageaddon.station.StationSlotStorage;
 import net.minecraft.client.Minecraft;
@@ -14,10 +15,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +36,7 @@ public final class ClientStationState {
     private static Map<Item, List<StackKey>> networkMaterialVariants = Map.of();
     private static boolean networkMaterialCacheDirty = true;
     private static int cachedNetworkViewSize = -1;
+    private static long materialCacheRevision;
     private static int networkMenuId = -1;
     private static StationKind networkMenuKind;
 
@@ -134,6 +138,13 @@ public final class ClientStationState {
         return menu.containerId == networkMenuId && networkMenuKind == kind;
     }
 
+    public static boolean isTaczNetworkMenu(AbstractContainerMenu menu) {
+        return menu.containerId == networkMenuId
+                && (networkMenuKind == StationKind.TACZ_GUN_SMITH_TABLE
+                || networkMenuKind == StationKind.TACZ_AMMO_WORKBENCH
+                || networkMenuKind == StationKind.TACZ_ATTACHMENT_WORKBENCH);
+    }
+
     public static boolean isStationAvailable(StationKind kind) {
         Minecraft minecraft = Minecraft.getInstance();
         boolean inNetworkStation = minecraft.player != null
@@ -146,6 +157,68 @@ public final class ClientStationState {
 
     public static void captureCurrentNetworkItems() {
         refreshNetworkMaterialCache();
+    }
+
+    public static long materialCacheRevision() {
+        return materialCacheRevision;
+    }
+
+    public static long countAvailable(Ingredient ingredient) {
+        refreshNetworkMaterialCache();
+        long count = 0;
+        Set<Item> candidateItems = new HashSet<>();
+        for (ItemStack option : ingredient.getItems()) {
+            candidateItems.add(option.getItem());
+        }
+        if (candidateItems.isEmpty()) {
+            for (Map.Entry<StackKey, Long> entry : networkMaterialCounts.entrySet()) {
+                if (ingredient.test(entry.getKey().asStack())) {
+                    count += entry.getValue();
+                }
+            }
+        } else {
+            for (Item item : candidateItems) {
+                for (StackKey key : networkMaterialVariants.getOrDefault(item, List.of())) {
+                    if (ingredient.test(key.asStack())) {
+                        count += networkMaterialCounts.getOrDefault(key, 0L);
+                    }
+                }
+            }
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            for (ItemStack stack : minecraft.player.getInventory().items) {
+                if (!stack.isEmpty() && ingredient.test(stack)) {
+                    count += stack.getCount();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static void consumeNetworkMaterials(List<ConsumedStack> consumed) {
+        if (consumed.isEmpty() || networkMaterialCounts.isEmpty()) {
+            return;
+        }
+        Map<StackKey, Long> updated = new HashMap<>(networkMaterialCounts);
+        boolean changed = false;
+        for (ConsumedStack entry : consumed) {
+            StackKey key = StackKey.of(entry.pattern());
+            long oldCount = updated.getOrDefault(key, 0L);
+            long newCount = Math.max(0, oldCount - entry.count());
+            if (newCount != oldCount) {
+                changed = true;
+                if (newCount == 0) {
+                    updated.remove(key);
+                } else {
+                    updated.put(key, newCount);
+                }
+            }
+        }
+        if (changed) {
+            networkMaterialCounts = Map.copyOf(updated);
+            materialCacheRevision++;
+        }
     }
 
     public static boolean hasMaterials(AbstractContainerMenu menu, StationKind kind,
@@ -244,6 +317,7 @@ public final class ClientStationState {
         networkMaterialVariants = Map.copyOf(immutableVariants);
         cachedNetworkViewSize = viewSize;
         networkMaterialCacheDirty = false;
+        materialCacheRevision++;
     }
 
     private static void clearNetworkMaterialCache() {
@@ -251,6 +325,7 @@ public final class ClientStationState {
         networkMaterialVariants = Map.of();
         networkMaterialCacheDirty = true;
         cachedNetworkViewSize = -1;
+        materialCacheRevision++;
     }
 
     private static void addMaterial(Map<StackKey, Long> counts,
@@ -270,6 +345,14 @@ public final class ClientStationState {
     private record StackKey(Item item, CompoundTag tag) {
         private static StackKey of(ItemStack stack) {
             return new StackKey(stack.getItem(), stack.hasTag() ? stack.getTag().copy() : null);
+        }
+
+        private ItemStack asStack() {
+            ItemStack stack = new ItemStack(item);
+            if (tag != null) {
+                stack.setTag(tag.copy());
+            }
+            return stack;
         }
     }
 

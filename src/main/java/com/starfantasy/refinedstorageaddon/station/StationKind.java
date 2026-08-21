@@ -29,7 +29,13 @@ public enum StationKind {
     IRONS_ARCANE_ANVIL("irons_arcane_anvil", "irons_spellbooks:arcane_anvil",
             2, 2, new int[]{0, 1}),
     IRONS_SCROLL_FORGE("irons_scroll_forge", "irons_spellbooks:scroll_forge",
-            39, 3, new int[]{36, 37, 38});
+            39, 3, new int[]{36, 37, 38}),
+    TACZ_GUN_SMITH_TABLE("tacz_gun_smith_table", "tacz:gun_smith_table",
+            -1, 0, new int[]{}),
+    TACZ_AMMO_WORKBENCH("tacz_ammo_workbench", "tacz:workbench_a",
+            -1, 0, new int[]{}),
+    TACZ_ATTACHMENT_WORKBENCH("tacz_attachment_workbench", "tacz:workbench_c",
+            -1, 0, new int[]{});
 
     private final String translationSuffix;
     private final ResourceLocation iconId;
@@ -57,8 +63,20 @@ public enum StationKind {
 
     public Component activationItemName() {
         return BuiltInRegistries.ITEM.getOptional(iconId)
-                .map(item -> new ItemStack(item).getHoverName())
+                .map(item -> activationDisplayStack(new ItemStack(item)).getHoverName())
                 .orElse(Component.translatable(translationKey()));
+    }
+
+    private ItemStack activationDisplayStack(ItemStack stack) {
+        switch (this) {
+            case TACZ_AMMO_WORKBENCH -> stack.getOrCreateTag().putString(
+                    "BlockId", "tacz:ammo_workbench");
+            case TACZ_ATTACHMENT_WORKBENCH -> stack.getOrCreateTag().putString(
+                    "BlockId", "tacz:attachment_workbench");
+            default -> {
+            }
+        }
+        return stack;
     }
 
     public boolean isInstalled() {
@@ -83,7 +101,21 @@ public enum StationKind {
 
     public boolean isActivationItem(ItemStack stack) {
         return !stack.isEmpty()
-                && activationItemIds.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+                && activationItemIds.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()))
+                && matchesActivationData(stack);
+    }
+
+    private boolean matchesActivationData(ItemStack stack) {
+        return switch (this) {
+            case TACZ_GUN_SMITH_TABLE -> !stack.hasTag()
+                    || !stack.getTag().contains("BlockId")
+                    || "tacz:gun_smith_table".equals(stack.getTag().getString("BlockId"));
+            case TACZ_AMMO_WORKBENCH -> stack.hasTag()
+                    && "tacz:ammo_workbench".equals(stack.getTag().getString("BlockId"));
+            case TACZ_ATTACHMENT_WORKBENCH -> stack.hasTag()
+                    && "tacz:attachment_workbench".equals(stack.getTag().getString("BlockId"));
+            default -> true;
+        };
     }
 
     public static StationKind fromActivationItem(ItemStack stack) {

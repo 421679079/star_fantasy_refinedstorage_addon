@@ -9,7 +9,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import java.util.Optional;
 
 public final class AddonNetwork {
-    private static final String PROTOCOL = "8";
+    private static final String PROTOCOL = "9";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath(StarFantasyRefinedStorageAddon.MOD_ID, "main"),
@@ -58,10 +58,15 @@ public final class AddonNetwork {
                 ServerboundSelectIronsScrollSpellPacket::decode,
                 ServerboundSelectIronsScrollSpellPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id, ServerboundTakeIronsScrollResultPacket.class,
+        CHANNEL.registerMessage(id++, ServerboundTakeIronsScrollResultPacket.class,
                 ServerboundTakeIronsScrollResultPacket::encode,
                 ServerboundTakeIronsScrollResultPacket::decode,
                 ServerboundTakeIronsScrollResultPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id, ClientboundTaczNetworkConsumptionPacket.class,
+                ClientboundTaczNetworkConsumptionPacket::encode,
+                ClientboundTaczNetworkConsumptionPacket::decode,
+                ClientboundTaczNetworkConsumptionPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }
